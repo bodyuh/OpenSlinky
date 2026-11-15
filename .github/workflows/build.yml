@@ -1,0 +1,29 @@
+name: Build OpenSlinky DLL
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Configure CMake
+        run: |
+          cmake -S . -B build -G Ninja -DCMAKE_TOOLCHAIN_FILE=cmake/toolchain-windows-clang-cl.cmake
+
+      - name: Compile DLL
+        run: |
+          cmake --build build
+
+      - name: Upload compiled DLL
+        uses: actions/upload-artifact@v4
+        with:
+          name: slinky-dll
+          path: build/slinky.dll
+          if-no-files-found: error
